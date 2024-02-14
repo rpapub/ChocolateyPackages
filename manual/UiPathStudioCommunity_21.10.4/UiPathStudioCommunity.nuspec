@@ -4,9 +4,9 @@
   <metadata>
     <id>uipathstudiocommunity</id>
     <version>21.10.4</version>
-    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages/manual/21.10.4/uipathstudiocommunity.nuspec</packageSourceUrl>
+    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages</packageSourceUrl>
     <owners>Christian Prior-Mamulyan</owners>
-    <title>UiPath Studio (Install)</title>
+    <title>UiPath Studio Community (Install)</title>
     <authors>Christian Prior-Mamulyan</authors>
     <projectUrl>https://www.uipath.com/de/product/studio</projectUrl>
     <copyright>2021 UiPath</copyright>
@@ -15,9 +15,9 @@
     <docsUrl>https://docs.uipath.com/studio</docsUrl>
     <!--<mailingListUrl></mailingListUrl>-->
     <!--<bugTrackerUrl></bugTrackerUrl>-->
-    <tags>uipathstudio rpa uipath</tags>
-    <summary>Install UiPath Studio.</summary>
-    <description>With Studio Desktop, you can build desktop automations, business process automations and application testing</description>
+    <tags>uipathstudiocommunity rpa uipath</tags>
+    <summary>Install UiPath Studio Community.</summary>
+    <description>With UiPath Studio Desktop in the Community version, you can build desktop automations, business process automations and application testing</description>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

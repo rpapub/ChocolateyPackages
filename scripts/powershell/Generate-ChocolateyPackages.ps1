@@ -5,7 +5,9 @@ param (
 
 function Generate-ChocolateyPackages {
     # Define the repository URL
-    $repositoryUrl = 'https://github.com/rpapub/ChocolateyPackages/'
+    $repositoryUrl = 'https://github.com/rpapub/ChocolateyPackages/blob/main'
+    # Convert to lowercase and remove non-alphabetic characters
+    $packageId = $productName.ToLower() -replace "[^a-z]"
 
     # Define paths
     $csvPath = ".\data\${productName}.csv"
@@ -26,6 +28,7 @@ function Generate-ChocolateyPackages {
         $toolsDir = Join-Path -Path $versionDir -ChildPath "tools"
         $nuspecFile = Join-Path -Path $versionDir -ChildPath "${productName}.nuspec"
         $installScript = Join-Path -Path $toolsDir -ChildPath "chocolateyinstall.ps1"
+        $readmeFile = Join-Path -Path $versionDir -ChildPath "README.md"
 
         # Skip creating directories if they already exist
         if (-not (Test-Path $versionDir)) {
@@ -36,27 +39,36 @@ function Generate-ChocolateyPackages {
             # Copy template files
             Copy-Item -Path "$templateDir\${productName}.nuspec" -Destination $nuspecFile -Force
             Copy-Item -Path "$templateDir\chocolateyinstall.ps1" -Destination $installScript -Force
+            Copy-Item -Path "$templateDir\README.md" -Destination $readmeFile -Force
 
             # Define the URL path for uipathstudio.nuspec
             $sanitizedOutputDir = $outputDir -replace '\\', '/'
-            $relativePath = "$versionNumber/${productName}.nuspec"
+            $relativePath = "${productName}_$versionNumber/${productName}.nuspec"
             $urlPath = "$sanitizedOutputDir/$relativePath"
 
             # Construct the complete URL
             $urlPath = $urlPath -replace '\./', ''
-            $nuspecUrl = "$repositoryUrl$urlPath"
+            $nuspecUrl = "$repositoryUrl/$urlPath"
 
             # Replace placeholders in nuspec file
             (Get-Content $nuspecFile) | ForEach-Object {
                 $_ -replace '{VERSION_PLACEHOLDER}', $versionNumber `
                     -replace '{COPYRIGHTYEAR_PLACEHOLDER}', "$lastModifiedYear" `
-                    -replace '{PACKAGE_SOURCE_URL}', "$nuspecUrl"
+                    -replace '{PACKAGE_SOURCE_URL}', "$nuspecUrl" `
+                    -replace '{NUGET_PACKAGEID_PLACEHOLDER}', "$packageId"
             } | Set-Content $nuspecFile
 
             # Replace URL placeholder in chocolateyinstall.ps1
             (Get-Content $installScript) | ForEach-Object {
                 $_ -replace '{URL_PLACEHOLDER}', $versionedUrl
             } | Set-Content $installScript
+
+            # Replace URL placeholder in README.md
+            (Get-Content $readmeFile) | ForEach-Object {
+                $_ -replace '{PRODUCTNAME_PLACEHOLDER}', $productName `
+                    -replace '{VERSION_PLACEHOLDER}', $versionNumber `
+                    -replace '{NUGET_PACKAGEID_PLACEHOLDER}', "$packageId"
+            } | Set-Content $readmeFile
         }
     }
 }
