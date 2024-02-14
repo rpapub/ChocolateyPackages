@@ -28,7 +28,7 @@ buildchocolateypackages:
 pushchocolateypackages:
 	@$(IMPORT_CMD) Push-ChocolateyPackages -ProductName '$(PRODUCT_NAME)'
 
-uipath: getuipathversions createchocolateypackages buildchocolateypackages pushchocolateypackages
+uipath: clean getuipathversions createchocolateypackages buildchocolateypackages pushchocolateypackages
 
 
 clean:

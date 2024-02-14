@@ -27,7 +27,6 @@ if (-not (Test-Path env:API_KEY_MYGET)) {
 # Define the target URLs
 $targets = @{
     dev  = "https://www.myget.org/F/project-basturma-chocolatey-alpha/api/v2/package"
-    test  = "https://www.myget.org/F/project-basturma-chocolatey-beta/api/v2/package"
     prod = "https://www.myget.org/F/project-basturma-chocolatey-packages/api/v2/package"
 }
 
