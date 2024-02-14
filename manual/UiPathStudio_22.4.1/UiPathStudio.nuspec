@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>uipathstudio</id>
+    <version>22.4.1</version>
+    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages/manual/22.4.1/UiPathStudio.nuspec</packageSourceUrl>
+    <owners>Christian Prior-Mamulyan</owners>
+    <title>UiPath Studio (Install)</title>
+    <authors>Christian Prior-Mamulyan</authors>
+    <projectUrl>https://www.uipath.com/de/product/studio</projectUrl>
+    <copyright>2022 UiPath</copyright>
+    <licenseUrl>https://licensing.uipath.com/</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <docsUrl>https://docs.uipath.com/studio</docsUrl>
+    <!--<mailingListUrl></mailingListUrl>-->
+    <!--<bugTrackerUrl></bugTrackerUrl>-->
+    <tags>uipathstudio rpa uipath</tags>
+    <summary>Install UiPath Studio.</summary>
+    <description>With Studio Desktop, you can build desktop automations, business process automations and application testing</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
