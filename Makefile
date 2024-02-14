@@ -2,8 +2,7 @@ SHELL := pwsh.exe
 .SHELLFLAGS := -NoProfile -Command
 
 rnd:
-	.\scripts\powershell\Build-ChocolateyPackages -productName "UiPathStudioCommunity"
-	.\scripts\powershell\Build-ChocolateyPackages -productName "UiPathStudio"
+	.\scripts\powershell\Check-UiPathDownloadAvailability.ps1 -productName "UiPathStudioCommunity" -daysOld 80
 
 all:
 	.\scripts\powershell\Check-UiPathDownloadAvailability.ps1 -productName "UiPathStudioCommunity"
@@ -16,3 +15,6 @@ all:
 	.\scripts\powershell\Push-PackagesMyGet.ps1 -productName "UiPathStudio" -target "test"
 
 
+clean:
+	Remove-Item -Path ".\manual\UiPathStudio_*" -Recurse -Force -ErrorAction SilentlyContinue
+	Remove-Item -Path ".\manual\UiPathStudioCommunity_*" -Recurse -Force -ErrorAction SilentlyContinue
