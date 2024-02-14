@@ -1,23 +1,26 @@
 param (
     [Parameter(Mandatory = $true)]
-    [string]$productName
+    [string]$productName,
+
+    [Parameter(Mandatory = $true)]
+    [int]$daysOld
 )
 
 function Get-UiPathStudioVersionInfo {
     param (
-        [string]$ProductName
+        [string]$ProductName,
+        [int]$DaysOld
     )
 
     $baseURL = "https://download.uipath.com/versions"
-    $fileExtension = ".msi" # File extension can be hardcoded
+    $fileExtension = ".msi"
 
-    $majorVersions = @(20, 21, 22, 23, 24) # Explicit list of major versions
-    $minorVersions = @(4, 10) # Only include minor versions 4 and 10
-    $patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12") # Explicit list of patch levels
+    $majorVersions = @(20, 21, 22, 23, 24)
+    $minorVersions = @(4, 10)
+    $patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12")
 
-    $lowestMajorVersion = [Linq.Enumerable]::Min([int[]]$majorVersions)
-    $initialYear = 2000 + $lowestMajorVersion
-    $fallbackYear = $initialYear
+    $currentDate = Get-Date
+    $cutoffDate = $currentDate.AddDays(-$DaysOld)
 
     $outputData = @()
 
@@ -35,16 +38,14 @@ function Get-UiPathStudioVersionInfo {
                         if ($lastModified) {
                             $parsedDate = [datetime]::Parse($lastModified)
                             $lastModifiedYear = $parsedDate.Year
-                            $fallbackYear = $lastModifiedYear
-                        }
-                        else {
-                            $lastModifiedYear = $fallbackYear
-                        }
 
-                        $outputData += [PSCustomObject]@{
-                            Version          = $version
-                            VersionedURL     = $url
-                            LastModifiedYear = $lastModifiedYear
+                            if ($parsedDate -gt $cutoffDate) {
+                                $outputData += [PSCustomObject]@{
+                                    Version      = $version
+                                    VersionedURL = $url
+                                    LastModified = $parsedDate.ToString("yyyy-MM-dd")
+                                }
+                            }
                         }
                     }
                 }
@@ -57,8 +58,10 @@ function Get-UiPathStudioVersionInfo {
 
     $csvFilePath = ".\data\$ProductName.csv"
     $outputData | Export-Csv -Path $csvFilePath -NoTypeInformation
-    Write-Host "CSV file has been created: $csvFilePath"
+
+    $urlsFound = $outputData.Count
+    Write-Host "CSV file has been created: $csvFilePath with $urlsFound URLs found."
 }
 
-# Call the function with the productName parameter
-Get-UiPathStudioVersionInfo -ProductName $productName
+# Call the function with the productName and daysOld parameters
+Get-UiPathStudioVersionInfo -ProductName $productName -DaysOld $daysOld

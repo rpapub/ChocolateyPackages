@@ -4,7 +4,7 @@
   <metadata>
     <id>uipathstudio</id>
     <version>21.4.3</version>
-    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages/manual/21.4.3/UiPathStudio.nuspec</packageSourceUrl>
+    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages</packageSourceUrl>
     <owners>Christian Prior-Mamulyan</owners>
     <title>UiPath Studio (Install)</title>
     <authors>Christian Prior-Mamulyan</authors>
@@ -17,7 +17,7 @@
     <!--<bugTrackerUrl></bugTrackerUrl>-->
     <tags>uipathstudio rpa uipath</tags>
     <summary>Install UiPath Studio.</summary>
-    <description>With Studio Desktop, you can build desktop automations, business process automations and application testing</description>
+    <description>With UiPath Studio Desktop, you can build desktop automations, business process automations and application testing</description>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
