@@ -3,6 +3,28 @@ param (
     [string]$productName
 )
 
+<#
+.SYNOPSIS
+Generate Chocolatey packages for the specified product name using version information from a CSV file and templates.
+
+.DESCRIPTION
+This function automates the process of generating Chocolatey packages for a given product name. It reads version information from a CSV file and creates version-specific directories and files, including NuSpec files, chocolateyinstall.ps1 scripts, and README.md files. Placeholders in these files are replaced with version-specific information and package IDs. The function ensures that each version is processed only if it does not already have a corresponding directory in the output location.
+
+.PARAMETER productName
+Specifies the name of the product for which Chocolatey packages are generated.
+
+.NOTES
+Version:        0.1.0
+Author:         Christian Prior-Mamulyan
+Creation Date:  2024-02-15
+License:        CC-BY
+Sourcecode:     https://github.com/rpapub
+
+.EXAMPLE
+Generate-ChocolateyPackages -productName "UiPathStudioCommunity"
+Generates Chocolatey packages for UiPath Studio Community editions.
+
+#>
 function Generate-ChocolateyPackages {
     # Define the repository URL
     $repositoryUrl = 'https://github.com/rpapub/ChocolateyPackages/blob/main'
@@ -16,6 +38,12 @@ function Generate-ChocolateyPackages {
 
     # Read CSV file
     $versions = Import-Csv $csvPath
+
+    # Check if there are 2 or more lines in the CSV file
+    if ($versions.Count -lt 2) {
+        Write-Host "Exiting: No versions registered in the CSV file. At least one line besides the header required."
+        exit 0
+    }
 
     # Iterate over each version
     foreach ($version in $versions) {
