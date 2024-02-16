@@ -28,8 +28,7 @@ buildchocolateypackages:
 pushchocolateypackages:
 	@$(IMPORT_CMD) Push-ChocolateyPackages -ProductName '$(PRODUCT_NAME)'
 
-uipath: clean getuipathversions createchocolateypackages buildchocolateypackages pushchocolateypackages
-
+uipath: getuipathversions createchocolateypackages buildchocolateypackages pushchocolateypackages
 
 clean:
 	@Remove-Item -Path ".\data\*.csv" -Force -ErrorAction SilentlyContinue
