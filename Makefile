@@ -18,7 +18,6 @@ IMPORT_CMD := Import-Module .\scripts\powershell\ChocolateyUiPathPackager\Chocol
 getuipathversions:
 	@$(IMPORT_CMD) Get-UiPathVersions -ProductName '$(PRODUCT_NAME)' -DaysOld '$(DAYS_OLD)'
 
-
 createchocolateypackages:
 	@$(IMPORT_CMD) New-ChocolateyPackages -ProductName '$(PRODUCT_NAME)'
 
