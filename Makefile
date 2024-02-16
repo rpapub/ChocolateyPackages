@@ -30,7 +30,6 @@ pushchocolateypackages:
 
 uipath: getuipathversions createchocolateypackages buildchocolateypackages pushchocolateypackages
 
-
 clean:
 	@Remove-Item -Path ".\data\*.csv" -Force -ErrorAction SilentlyContinue
 	@Remove-Item -Path ".\builds\*" -Force -ErrorAction SilentlyContinue
