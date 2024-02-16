@@ -9,6 +9,18 @@ jobs:
   build_and_push:
     runs-on: windows-latest
     steps:
+      - name: Check for API key secret
+        shell: pwsh
+        run: |
+          if (-not $env:MYGET_API_KEY) {
+            Write-Host "Error: MYGET_API_KEY secret is not defined."
+            exit 1
+          }
+
+      - name: Create .env file with API key
+        shell: pwsh
+        run: 'Set-Content -Path ".env" -Value "MYGET_API_KEY=${env:MYGET_API_KEY}"'
+
       - name: Checkout Repository
         uses: actions/checkout@v3
 

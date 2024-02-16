@@ -334,6 +334,6 @@ function Push-ChocolateyPackages {
     # Push the packages for the specified product name to the target
     $packageFiles = Get-ChildItem -Path "./builds" -Filter "$productNameLowerCase.*.*.*.nupkg" -Recurse
     foreach ($packageFile in $packageFiles) {
-        nuget push $packageFile.FullName $envVariables['API_KEY_MYGET'] -Source $targets[$target] -SkipDuplicate
+        nuget push $packageFile.FullName $envVariables['MYGET_API_KEY'] -Source $targets[$target] -SkipDuplicate
     }
 }
