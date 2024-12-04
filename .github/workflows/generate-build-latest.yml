@@ -9,8 +9,35 @@ jobs:
   build_and_push:
     runs-on: windows-latest
     steps:
+      - name: Check for API key secret
+        shell: pwsh
+        env:
+          MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
+        run: |
+          if (-not $env:MYGET_API_KEY) {
+            Write-Host "Error: MYGET_API_KEY secret is not defined."
+            exit 1
+          }
+
+      - name: Create .env file with API key
+        shell: pwsh
+        env:
+          MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
+        run: |
+          Set-Content -Path ".env" -Value "MYGET_API_KEY=$($env:MYGET_API_KEY)"
+
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: make all
-        run: make uipath
+      - name: Install Make
+        shell: pwsh
+        run: choco install make -y
+
+      - name: Run Make Commands
+        run: |
+          make -e new-versions
+          make -e build-packages
+          make -e publish-packages
+          make -e new-versions PRODUCT_NAME=UiPathStudio
+          make -e build-packages PRODUCT_NAME=UiPathStudio
+          make -e publish-packages PRODUCT_NAME=UiPathStudio
