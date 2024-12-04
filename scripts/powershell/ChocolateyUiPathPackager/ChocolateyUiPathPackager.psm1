@@ -36,7 +36,7 @@ function Get-UiPathVersions {
     $baseURL = "https://download.uipath.com/versions"
     $fileExtension = ".msi"
 
-    $majorVersions = @(20, 21, 22, 23, 24)
+    $majorVersions = @(20, 21, 22, 23, 24, 25)
     $minorVersions = @(4, 10)
     $patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12", ".13", ".14", ".15", ".16", ".17", ".18")
 
@@ -86,7 +86,8 @@ function Get-UiPathVersions {
     }
     else {
         Write-Host "No URLs found for $ProductName within the last $DaysOld days."
-        exit 1
+        Write-Warning "FIXME exit 0 or exit 1?"
+        exit 0
     }
 }
 
@@ -147,6 +148,7 @@ function New-ChocolateyPackages {
         $nuspecFile = Join-Path -Path $versionDir -ChildPath "${ProductName}.nuspec"
         $installScript = Join-Path -Path $toolsDir -ChildPath "chocolateyinstall.ps1"
         $readmeFile = Join-Path -Path $versionDir -ChildPath "README.md"
+        $markerfile = Join-Path -Path $versionDir -ChildPath "BuildFlagFile.gitignore"
 
         # Skip creating directories if they already exist
         if (-not (Test-Path $versionDir)) {
@@ -158,6 +160,7 @@ function New-ChocolateyPackages {
             Copy-Item -Path "$templateDir\${ProductName}.nuspec" -Destination $nuspecFile -Force
             Copy-Item -Path "$templateDir\chocolateyinstall.ps1" -Destination $installScript -Force
             Copy-Item -Path "$templateDir\README.md" -Destination $readmeFile -Force
+            Copy-Item -Path "$templateDir\..\marker" -Destination $markerfile -Force
 
             # Define the URL path for uipathstudio.nuspec
             $sanitizedOutputDir = $outputDir -replace '\\', '/'
@@ -250,6 +253,63 @@ function Build-ChocolateyPackages {
     }
 }
 
+function Build-ChocolateyPackage {
+    param (
+        [string]$ProductName,
+        [string]$PackageLocation,
+        [string]$BuildsDirectory  # This is relative to the Makefile, not PackageLocation
+    )
+
+    # Ensure the package location exists
+    if (-not (Test-Path -Path $PackageLocation)) {
+        Write-Error "Package location does not exist: $PackageLocation"
+        exit 1
+    }
+
+    # Convert to an absolute path for the BuildsDirectory based on the current PWD
+    $absoluteBuildsDir = Join-Path -Path (Get-Location) -ChildPath $BuildsDirectory
+
+    # Ensure the builds directory exists, create it if it doesn't
+    if (-not (Test-Path -Path $absoluteBuildsDir)) {
+        New-Item -Path $absoluteBuildsDir -ItemType Directory | Out-Null
+    }
+
+    # Change directory to where the Chocolatey package spec (nuspec file) resides
+    Push-Location -Path $PackageLocation
+
+    # Check for the presence of a .nuspec file
+    $nuspecFiles = Get-ChildItem -Path . -Filter "*.nuspec" -File
+    if ($nuspecFiles.Count -eq 0) {
+        Pop-Location
+        Write-Error "No .nuspec file found in $PackageLocation"
+        exit 1
+    }
+
+    try {
+        # Run choco pack command in the current directory
+        choco pack
+        
+        # Move the resulting nupkg file to the specified builds directory
+        $nupkgFiles = Get-ChildItem -Path . -Filter "*.nupkg" -File
+        foreach ($file in $nupkgFiles) {
+            Move-Item -Path $file.FullName -Destination $absoluteBuildsDir -Force
+        }
+        Write-Host "Package for $ProductName built and moved to $absoluteBuildsDir"
+    }
+    catch {
+        Write-Error "Failed to pack the Chocolatey package: $_"
+        exit 1
+    }
+    finally {
+        Pop-Location
+    }
+}
+
+
+
+
+
+
 <#
 .SYNOPSIS
 Imports environment variables from the .env file in the current directory.
@@ -337,3 +397,45 @@ function Push-ChocolateyPackages {
         nuget push $packageFile.FullName $envVariables['MYGET_API_KEY'] -Source $targets[$target] -SkipDuplicate
     }
 }
+
+function Push-ChocolateyPackage {
+    param (
+        [string]$NupkgFile,  # Path to the .nupkg file to push
+        [string]$TargetRepository = "test"
+    )
+
+    # Load environment variables
+    $envVariables = Import-EnvironmentVariables
+
+    # Define the target URLs
+    $targets = @{
+        dev  = "https://www.myget.org/F/project-basturma-chocolatey-alpha/api/v2/package"
+        test = "https://www.myget.org/F/project-basturma-chocolatey-beta/api/v2/package"
+        prod = "https://www.myget.org/F/project-basturma-chocolatey-packages/api/v2/package"
+    }
+
+    # Check if the target is valid
+    if (-not $targets.ContainsKey($TargetRepository)) {
+        Write-Error "Error: Invalid target specified. Available targets: $($targets.Keys -join ', ')"
+        exit 1
+    }
+
+    # Check if the .nupkg file exists
+    if (Test-Path -Path $NupkgFile) {
+        try {
+            # Push the package to the target repository
+            nuget push $NupkgFile -ApiKey $envVariables['MYGET_API_KEY'] -Source $targets[$TargetRepository] -SkipDuplicate
+            Write-Host "Successfully pushed $(Split-Path $NupkgFile -Leaf) to the $TargetRepository repository."
+        }
+        catch {
+            Write-Error "Failed to push the package due to an error: $_"
+            exit 1
+        }
+    } else {
+        Write-Error "Error: .nupkg file does not exist: $NupkgFile"
+        exit 1
+    }
+}
+
+
+
