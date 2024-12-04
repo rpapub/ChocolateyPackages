@@ -24,7 +24,6 @@ new-versions:
 	@Write-Host "createchocolateypackages"
 	@$(IMPORT_CMD) New-ChocolateyPackages -ProductName '$(PRODUCT_NAME)'
 
-
 all: new-versions build-packages publish-packages
 	@Write-Host "all completed"
 
