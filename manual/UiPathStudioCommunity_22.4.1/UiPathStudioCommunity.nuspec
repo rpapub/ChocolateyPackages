@@ -4,7 +4,7 @@
   <metadata>
     <id>uipathstudiocommunity</id>
     <version>22.4.1</version>
-    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages/manual/22.4.1/uipathstudiocommunity.nuspec</packageSourceUrl>
+    <packageSourceUrl>https://github.com/rpapub/ChocolateyPackages/blob/main/manual/UiPathStudioCommunity_22.4.1/UiPathStudioCommunity.nuspec</packageSourceUrl>
     <owners>Christian Prior-Mamulyan</owners>
     <title>UiPath Studio (Install)</title>
     <authors>Christian Prior-Mamulyan</authors>
