@@ -7,7 +7,7 @@ endif
 .SHELLFLAGS := -NoProfile -Command
 
 PRODUCT_NAME ?= UiPathStudioCommunity
-DAYS_OLD ?= 33
+DAYS_OLD ?= 99
 
 IMPORT_CMD := Import-Module .\scripts\powershell\ChocolateyUiPathPackager\ChocolateyUiPathPackager.psd1 -Force -WarningAction SilentlyContinue;
 
@@ -47,9 +47,9 @@ print-vars:
 
 clean:
 	@Write-Host "clean"
-	@Remove-Item -Path ".\manual\UiPathStudio_*" -Recurse -Force -ErrorAction SilentlyContinue
-	@Remove-Item -Path ".\manual\UiPathStudioCommunity_*" -Recurse -Force -ErrorAction SilentlyContinue
-	@#/usr/bin/bash -c 'for dir in manual/UiPathStudio*_*; do find "$$dir" -type f -exec touch -t 202301010000 {} \;; done'
+	# @Remove-Item -Path ".\manual\UiPathStudio_*" -Recurse -Force -ErrorAction SilentlyContinue
+	# @Remove-Item -Path ".\manual\UiPathStudioCommunity_*" -Recurse -Force -ErrorAction SilentlyContinue
+	# @#/usr/bin/bash -c 'for dir in manual/UiPathStudio*_*; do find "$$dir" -type f -exec touch -t 202301010000 {} \;; done'
 	@#/usr/bin/bash -c 'find manual/UiPathStudio*_* -type f -name "marker" -exec rm {} \;'
 	@Get-ChildItem -Path 'manual/UiPathStudio*.*' -Filter 'marker' -File -Recurse | Remove-Item -Force -ErrorAction SilentlyContinue
 	@Get-ChildItem -Path 'builds/' -Filter 'uipath*' -File -Recurse | Remove-Item -Force -ErrorAction SilentlyContinue
