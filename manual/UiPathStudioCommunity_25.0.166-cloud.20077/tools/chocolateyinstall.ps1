@@ -6,7 +6,27 @@ $url64 = ''
 
 $pp = Get-PackageParameters
 
+# Set defaults and parse user-provided package parameters
+$addLocal        = $pp['ADDLOCAL']        ?: 'DesktopFeature,Studio,Robot,RegisterService'
+$nugetOptions    = $pp['NUGET_OPTIONS']
+$packagesFolder  = $pp['PACKAGES_FOLDER']
+$clientId        = $pp['CLIENT_ID']
+$clientSecret    = $pp['CLIENT_SECRET']
+$serviceUrl      = $pp['SERVICE_URL']
+$orchestratorUrl = $pp['ORCHESTRATOR_URL']
+$telemetry       = $pp['TELEMETRY_ENABLED']
+$enablePip       = $pp['ENABLE_PIP']
+
 $silentArgs = "/Q /norestart"
+
+if ($nugetOptions)    { $silentArgs += " NUGET_OPTIONS=$nugetOptions" }
+if ($packagesFolder)  { $silentArgs += " PACKAGES_FOLDER=`"$packagesFolder`"" }
+if ($clientId)        { $silentArgs += " CLIENT_ID=$clientId" }
+if ($clientSecret)    { $silentArgs += " CLIENT_SECRET=$clientSecret" }
+if ($serviceUrl)      { $silentArgs += " SERVICE_URL=`"$serviceUrl`"" }
+if ($orchestratorUrl) { $silentArgs += " ORCHESTRATOR_URL=`"$orchestratorUrl`"" }
+if ($telemetry)       { $silentArgs += " TELEMETRY_ENABLED=$telemetry" }
+if ($enablePip)       { $silentArgs += " ENABLE_PIP=$enablePip" }
 
 $packageArgs = @{
   packageName    = $env:ChocolateyPackageName

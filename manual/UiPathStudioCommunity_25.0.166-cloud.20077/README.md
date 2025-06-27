@@ -18,20 +18,38 @@ To install UiPathStudioCommunity 25.0.166-cloud.20077 using Chocolatey, follow t
 
 2. **Run the Chocolatey Installation Command:** Copy and paste the following command into the command prompt and press Enter:
 
-   - For the **test** source:
+  - For the **test** source:
 
-     ```shell
-     choco install uipathstudiocommunity --version 25.0.166-cloud.20077 --source https://www.myget.org/F/project-basturma-chocolatey-beta/api/v2
-     ```
+    ```shell
+    choco install uipathstudiocommunity --version 25.0.166-cloud.20077 --source https://www.myget.org/F/project-basturma-chocolatey-beta/api/v2
+    ```
 
-   - For the **prod** source:
-     ```shell
-     choco install uipathstudiocommunity --version 25.0.166-cloud.20077 --source https://www.myget.org/F/project-basturma-chocolatey-packages/api/v2
-     ```
+  - For the **prod** source:
+    ```shell
+    choco install uipathstudiocommunity --version 25.0.166-cloud.20077 --source https://www.myget.org/F/project-basturma-chocolatey-packages/api/v2
+    ```
 
-   This command will instruct Chocolatey to download and install UiPathStudioCommunity version 25.0.166-cloud.20077.
+  This command will instruct Chocolatey to download and install UiPathStudioCommunity version 25.0.166-cloud.20077.
 
-3. **Follow the Installation Wizard:** Once the installation command has completed, follow any on-screen prompts to complete the installation process.
+3. **Optionally configure installation:**
+
+  You can pass installation parameters via `--params`. Example:
+
+  ```shell
+  choco install uipathstudiocommunity --version 25.0.166-cloud.20077 --params '"/ADDLOCAL=Studio,Robot /NUGET_OPTIONS=DisableOnlineFeeds /PACKAGES_FOLDER=C:\RPA\Packages /CLIENT_ID=abc /CLIENT_SECRET=xyz /SERVICE_URL=https://demo.uipath.com /ORCHESTRATOR_URL=https://demo.uipath.com/org/tenant /TELEMETRY_ENABLED=0 /ENABLE_PIP=1"'
+  ```
+
+Supported parameters:
+
+* `ADDLOCAL`
+* `NUGET_OPTIONS`
+* `PACKAGES_FOLDER`
+* `CLIENT_ID`
+* `CLIENT_SECRET`
+* `SERVICE_URL`
+* `ORCHESTRATOR_URL`
+* `TELEMETRY_ENABLED`
+* `ENABLE_PIP`
 
 ## Uninstallation
 
