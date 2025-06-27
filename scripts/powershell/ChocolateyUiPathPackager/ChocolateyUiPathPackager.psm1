@@ -37,9 +37,17 @@ function Get-UiPathVersions {
     $fileExtension = ".msi"
 
     $majorVersions = @(20, 21, 22, 23, 24, 25)
+    $majorVersions = @(25)
 
-    $minorVersions = @(4, 10)
-    $patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12", ".13", ".14", ".15", ".16", ".17", ".18")
+    #$minorVersions = @(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    #$patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12", ".13", ".14", ".15", ".16", ".17", ".18")
+    $minorVersions = @(0..1)
+    $patchLevels = @(165..167)
+
+# Format: 25.0.PATCH-cloud.BUILD (e.g. 25.0.166-cloud.20077)
+$cloudMinorVersions  = 0..0
+$cloudPatchLevels    = 0..200
+$cloudBuildNumbers   = 0..99999
 
     $currentDate = Get-Date
     $cutoffDate = $currentDate.AddDays(-$DaysOld)
@@ -49,8 +57,10 @@ function Get-UiPathVersions {
     foreach ($majorVersion in $majorVersions) {
         foreach ($minorVersion in $minorVersions) {
             foreach ($patchLevel in $patchLevels) {
-                $version = "$majorVersion.$minorVersion$patchLevel"
+                $version = "$majorVersion.$minorVersion.$patchLevel"
                 $url = "$baseURL/$version/$ProductName$fileExtension"
+                Write-Host "Going to evaluate url: $url ."
+                Start-Sleep -Seconds 3
                 try {
                     $response = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing
                     
@@ -75,6 +85,51 @@ function Get-UiPathVersions {
                     # Handling exceptions or non-200 status codes by not adding to output
                 }
             }
+
+#todo: validate
+# Format: 25.0.166-cloud.20077 — includes additional cloud build component
+foreach ($majorVersion in $majorVersions) {
+    foreach ($minor in $cloudMinorVersions) {
+        foreach ($patch in $cloudPatchLevels) {
+            foreach ($build in $cloudBuildNumbers) {
+                $version = "25.$minor.$patch-cloud.$build"
+                $url = "$baseURL/$version/$ProductName$fileExtension"
+                Write-Host "Evaluating cloud-versioned URL: $url"
+                Start-Sleep -Milliseconds 1000
+                try {
+                    $response = Invoke-WebRequest -Uri $url -Method Head -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
+                    if ($response.StatusCode -eq 200) {
+                        $lastModified = $response.Headers["Last-Modified"]
+                        if ($lastModified) {
+                            Write-Host "→ Last-Modified: $lastModified"
+                            try {
+                                $parsedDate = [datetime]::Parse($lastModified)
+                                Write-Host "→ Parsed Date: $parsedDate (cutoff: $cutoffDate)"
+                                if ($parsedDate -gt $cutoffDate) {
+                                    $outputData += [PSCustomObject]@{
+                                        Version      = $version
+                                        VersionedURL = $url
+                                        LastModified = $parsedDate.ToString("yyyy-MM-dd")
+                                    }
+                                    Write-Host "✅ Accepted: $version"
+                                } else {
+                                    Write-Host "⏩ Skipped: $version — too old ($parsedDate)"
+                                }
+                            } catch {
+                                Write-Warning "⚠ Failed to parse Last-Modified for $version → $lastModified"
+                            }
+                        } else {
+                            Write-Warning "⚠ No Last-Modified header for $version"
+                        }
+                    }
+                } catch {
+                    Write-Host "❌ Unreachable: $url"
+                }
+            }
+        }
+    }
+}
+
         }
     }
 
@@ -83,12 +138,12 @@ function Get-UiPathVersions {
         $outputData | Export-Csv -Path $csvFilePath -NoTypeInformation
         $urlsFound = $outputData.Count
         Write-Host "CSV file has been created: $csvFilePath with $urlsFound URLs found."
-        exit 0
+        #exit 0
     }
     else {
         Write-Host "No URLs found for $ProductName within the last $DaysOld days."
         Write-Warning "FIXME exit 0 or exit 1?"
-        exit 0
+        #exit 0
     }
 }
 
