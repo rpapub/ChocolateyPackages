@@ -37,17 +37,18 @@ function Get-UiPathVersions {
     $fileExtension = ".msi"
 
     $majorVersions = @(20, 21, 22, 23, 24, 25)
-    $majorVersions = @(25)
+    $majorVersions = @(20, 21, 22, 23, 24, 25)
+    #$majorVersions = @(25)
 
-    #$minorVersions = @(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-    #$patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12", ".13", ".14", ".15", ".16", ".17", ".18")
-    $minorVersions = @(0..1)
-    $patchLevels = @(165..167)
+    $minorVersions = @(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    $patchLevels = @("", ".0", ".1", ".2", ".3", ".4", ".5", ".6", ".7", ".8", ".9", ".10", ".11", ".12", ".13", ".14", ".15", ".16", ".17", ".18")
+    #$minorVersions = @(0..1)
+    #$patchLevels = @(165..167)
 
 # Format: 25.0.PATCH-cloud.BUILD (e.g. 25.0.166-cloud.20077)
 $cloudMinorVersions  = 0..0
-$cloudPatchLevels    = 0..200
-$cloudBuildNumbers   = 0..99999
+$cloudPatchLevels    = 166..166
+$cloudBuildNumbers   = 20076..20077
 
     $currentDate = Get-Date
     $cutoffDate = $currentDate.AddDays(-$DaysOld)
@@ -111,19 +112,19 @@ foreach ($majorVersion in $majorVersions) {
                                         VersionedURL = $url
                                         LastModified = $parsedDate.ToString("yyyy-MM-dd")
                                     }
-                                    Write-Host "✅ Accepted: $version"
+                                    Write-Host "Accepted: $version"
                                 } else {
-                                    Write-Host "⏩ Skipped: $version — too old ($parsedDate)"
+                                    Write-Host "Skipped: $version — too old ($parsedDate)"
                                 }
                             } catch {
-                                Write-Warning "⚠ Failed to parse Last-Modified for $version → $lastModified"
+                                Write-Warning "Failed to parse Last-Modified for $version → $lastModified"
                             }
                         } else {
-                            Write-Warning "⚠ No Last-Modified header for $version"
+                            Write-Warning "No Last-Modified header for $version"
                         }
                     }
                 } catch {
-                    Write-Host "❌ Unreachable: $url"
+                    Write-Host "Unreachable: $url"
                 }
             }
         }
