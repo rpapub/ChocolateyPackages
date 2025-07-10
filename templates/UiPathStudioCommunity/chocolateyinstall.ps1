@@ -7,7 +7,7 @@ $url64 = ''
 $pp = Get-PackageParameters
 
 # Set defaults and parse user-provided package parameters
-$addLocal        = $pp['ADDLOCAL']        ?: 'DesktopFeature,Studio,Robot,RegisterService'
+$addLocal = if ($pp['ADDLOCAL']) { $pp['ADDLOCAL'] } else { 'Studio,ExcelAddin,Robot,StartupLauncher,ChromeExtension,EdgeExtension,JavaScriptAddOn' }
 $nugetOptions    = $pp['NUGET_OPTIONS']
 $packagesFolder  = $pp['PACKAGES_FOLDER']
 $clientId        = $pp['CLIENT_ID']
@@ -19,6 +19,7 @@ $enablePip       = $pp['ENABLE_PIP']
 
 $silentArgs = "/Q /norestart"
 
+if ($addLocal) { $silentArgs += " ADDLOCAL=$addLocal" }
 if ($nugetOptions)    { $silentArgs += " NUGET_OPTIONS=$nugetOptions" }
 if ($packagesFolder)  { $silentArgs += " PACKAGES_FOLDER=`"$packagesFolder`"" }
 if ($clientId)        { $silentArgs += " CLIENT_ID=$clientId" }

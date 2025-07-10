@@ -1,7 +1,7 @@
 
 $ErrorActionPreference = 'Stop'
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url = 'https://download.uipath.com/versions/25.0.166-cloud.20076/UiPathStudioCommunity.msi'
+$url = 'https://download.uipath.com/versions/25.0.167-cloud.20208/UiPathStudioCommunity.msi'
 $url64 = ''
 
 $pp = Get-PackageParameters

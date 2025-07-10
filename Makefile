@@ -7,7 +7,7 @@ endif
 .SHELLFLAGS := -NoProfile -Command
 
 PRODUCT_NAME ?= UiPathStudioCommunity
-DAYS_OLD ?= 99
+DAYS_OLD ?= 9999
 
 IMPORT_CMD := Import-Module .\scripts\powershell\ChocolateyUiPathPackager\ChocolateyUiPathPackager.psd1 -Force -WarningAction SilentlyContinue;
 
